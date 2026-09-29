@@ -330,6 +330,7 @@ export type Database = {
           effects: string
           icon: string
           id: number
+          is_temporary: boolean
           modifiers: Json
           name: string
           rarity: string
@@ -342,6 +343,7 @@ export type Database = {
           effects?: string
           icon?: string
           id?: number
+          is_temporary?: boolean
           modifiers?: Json
           name: string
           rarity?: string
@@ -354,6 +356,7 @@ export type Database = {
           effects?: string
           icon?: string
           id?: number
+          is_temporary?: boolean
           modifiers?: Json
           name?: string
           rarity?: string
