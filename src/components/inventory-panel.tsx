@@ -39,6 +39,8 @@ export function InventoryPanel({
   canEditNotes,
   canRemoveEquipment,
   pending,
+  equipmentAction,
+
   onAddItem,
   onRemoveItem,
   onEquip,
@@ -60,7 +62,11 @@ export function InventoryPanel({
       </section>
 
       <section className="grid gap-3">
-        <h3 className="font-display text-lg">Equipamentos na sacola</h3>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-display text-lg">Equipamentos na sacola</h3>
+          {equipmentAction}
+        </div>
+
         {gear.length === 0 ? (
           <p className="text-sm text-subtle">Nenhum equipamento. O Mestre entrega os equipamentos.</p>
         ) : (
