@@ -7,6 +7,8 @@ import { DiceRoller, useDiceToasts } from "@/components/dice-roller";
 import { EffectsList } from "@/components/effects-list";
 import { EffectsLibrary, EquipmentLibrary } from "@/components/gm-library";
 import { InventoryPanel } from "@/components/inventory-panel";
+import { AddEquipmentButton } from "@/components/quick-equipment";
+
 import { GmStatsEditor } from "@/components/stats-panel";
 import { VitalsBars } from "@/components/vitals-bars";
 import { Badge } from "@/components/ui/badge";
@@ -89,7 +91,7 @@ export function GmPanel({ profile, party }: { profile: Profile; party: Character
           </div>
         ) : null}
 
-        {tab === "arsenal" ? <EquipmentLibrary /> : null}
+        {tab === "arsenal" ? <EquipmentLibrary party={party} /> : null}
         {tab === "efeitos" ? <EffectsLibrary /> : null}
         {tab === "dado" ? (
           <Card className="p-6 sm:p-8">
@@ -286,6 +288,8 @@ function GmEditor({ character }: { character: Character }) {
           canEditNotes={false}
           canRemoveEquipment
           pending={pending}
+          equipmentAction={<AddEquipmentButton character={character} />}
+
           onAddItem={(item) => run(() => api.addItem(character.id, item), "Item adicionado.")}
           onRemoveItem={(id) => run(() => api.removeItem(id))}
           onEquip={(id, slot) => run(() => api.equipItem(id, slot), "Equipado.")}
