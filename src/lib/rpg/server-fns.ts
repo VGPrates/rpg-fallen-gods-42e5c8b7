@@ -146,6 +146,26 @@ export const gmGiveEquipmentFn = createServerFn({ method: "POST" })
     return store.gmGiveEquipment(context.userId, data.characterId, data.equipmentId);
   });
 
+export const gmQuickCreateEquipmentFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data: {
+      values: Record<string, unknown>;
+      characterId: number | null;
+      temporary: boolean;
+      deliver: boolean;
+    }) => data,
+  )
+  .handler(async ({ context, data }) => {
+    const store = await import("./store.server");
+    return store.gmQuickCreateEquipment(context.userId, data.values, {
+      characterId: data.characterId,
+      temporary: data.temporary,
+      deliver: data.deliver,
+    });
+  });
+
+
 export const saveLibraryEntryFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { table: "equipment" | "effects" | "conditions"; id: number | null; values: Record<string, unknown> }) => data)

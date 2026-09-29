@@ -21,6 +21,8 @@ export {
   equipItem,
   unequipItem,
   gmGiveEquipment,
+  gmQuickCreateEquipment,
+
   saveLibraryEntry,
   deleteLibraryEntry,
   applyEffect,

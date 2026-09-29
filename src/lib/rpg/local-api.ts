@@ -95,6 +95,21 @@ export async function gmGiveEquipment(characterId: number, equipmentId: number) 
   return fns.gmGiveEquipmentFn({ data: { characterId, equipmentId } });
 }
 
+export async function gmQuickCreateEquipment(
+  values: Record<string, unknown>,
+  options: { characterId: number | null; temporary: boolean; deliver: boolean },
+) {
+  return fns.gmQuickCreateEquipmentFn({
+    data: {
+      values,
+      characterId: options.characterId,
+      temporary: options.temporary,
+      deliver: options.deliver,
+    },
+  });
+}
+
+
 type LibTable = "equipment" | "effects" | "conditions";
 
 export async function saveLibraryEntry(table: LibTable, id: number | null, values: Record<string, unknown>) {
