@@ -147,6 +147,8 @@ export function BodyFigure({ items, canEquip, onEquip, onUnequip }: Props) {
         <div className="equip-hud__frame" aria-hidden />
         <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           {BODY_SLOTS.map((s) => {
+            // Acessório pode ser usado em qualquer parte do corpo: sem linha.
+            if (s.key === "acessorio") return null;
             const l = LAYOUT[s.key];
             const x1 = l.side === "left" ? 27.2 : 72.8;
             const x2 = toX(l.anchor[0]);
