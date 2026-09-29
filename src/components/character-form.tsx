@@ -1,4 +1,4 @@
-import { Lock } from "lucide-react";
+import { Dna, Hourglass, Lock, Shield, Signature } from "lucide-react";
 import { CLASSES, RACES } from "@/lib/rpg/constants";
 import type { Character, CharacterDraft } from "@/lib/rpg/types";
 import { Button } from "@/components/ui/button";
@@ -104,11 +104,11 @@ export function CharacterForm({ initial, submitLabel, pending, onSubmit }: Props
  * tentativa de alteração).
  */
 export function LockedIdentity({ character }: { character: Character }) {
-  const rows: { label: string; value: string }[] = [
-    { label: "Nome", value: character.name },
-    { label: "Raça", value: character.race },
-    { label: "Classe", value: character.className },
-    { label: "Idade", value: `${character.age} anos` },
+  const rows = [
+    { label: "Nome", value: character.name, icon: Signature },
+    { label: "Raça", value: character.race, icon: Dna },
+    { label: "Classe", value: character.className, icon: Shield },
+    { label: "Idade", value: `${character.age} anos`, icon: Hourglass },
   ];
   return (
     <div className="grid gap-4">
@@ -117,13 +117,13 @@ export function LockedIdentity({ character }: { character: Character }) {
         <span>Identidade selada na criação da ficha. Peça ao Mestre para corrigir.</span>
       </div>
       <dl className="grid gap-3 sm:grid-cols-2">
-        {rows.map((r) => (
-          <div key={r.label} className="grid gap-1 rounded-lg bg-elevated/60 px-3 py-2 shadow-border">
+        {rows.map(({ label, value, icon: Icon }) => (
+          <div key={label} className="grid gap-1 rounded-lg bg-elevated/60 px-3 py-2 shadow-border">
             <dt className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.14em] text-subtle uppercase">
-              <Lock className="size-3" />
-              {r.label}
+              <Icon className="size-3" />
+              {label}
             </dt>
-            <dd className="truncate font-medium">{r.value || "—"}</dd>
+            <dd className="truncate font-medium">{value || "—"}</dd>
           </div>
         ))}
       </dl>
