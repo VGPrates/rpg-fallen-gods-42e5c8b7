@@ -12,6 +12,8 @@ type Props = {
   disabled?: boolean;
   required?: boolean;
   compact?: boolean;
+  /** Render the value as a typeable number input instead of static text. */
+  editable?: boolean;
   ariaLabel: string;
   onChange?: (value: number) => void;
 };
