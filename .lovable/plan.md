@@ -1,21 +1,14 @@
-# Remover o código da mesa
-
-## Objetivo
-Eliminar completamente o mecanismo de código de convite, sem remover as mesas nem alterar as demais funções do jogo.
+# Compactar efeitos e padronizar vitais
 
 ## Alterações
-- Remover do topo da tela do Mestre o texto e o valor “Código da mesa”.
-- Remover o código dos dados de perfil e das ações de criação de Mestre/Jogador.
-- Remover geração, consulta, validação e mensagens relacionadas ao código.
-- Manter `game_tables` e a associação automática dos jogadores à mesa existente, pois elas organizam fichas e permissões.
-- Remover a coluna de código do banco por uma alteração segura, preservando mesas, personagens e contas existentes.
+- Fazer o quadro “Efeitos e condições” ocupar apenas a altura necessária ao conteúdo, eliminando o espaço vazio quando o quadro ao lado for mais alto.
+- Alterar os valores iniciais e máximos de Vida, Mana e Estamina para 100 em novas fichas.
+- Atualizar os padrões do banco para que futuras fichas, tanto de jogadores quanto criadas pelo Mestre, recebam os mesmos valores.
 
 ## Validação
-- Confirmar que Mestre e Jogador continuam entrando normalmente.
-- Confirmar que criar mesa/ficha e abrir os painéis continua funcionando.
-- Verificar compilação, erros do navegador e ausência de referências ao código da mesa.
+- Conferir o painel do Mestre em tela grande e celular.
+- Criar ou validar uma ficha nova e confirmar os seis valores em 100.
+- Confirmar que o projeto continua carregando sem erros.
 
-## Detalhes técnicos
-- Atualizar os tipos e contratos internos para não aceitarem ou retornarem `inviteCode`.
-- Simplificar a escolha da mesa do jogador para usar a mesa existente, sem busca por convite.
-- Aplicar uma migração que remove somente `game_tables.invite_code`; a tabela `game_tables` permanece.
+## Observação
+- Fichas já existentes manterão seus valores atuais; a mudança vale para novas fichas.
