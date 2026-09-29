@@ -38,21 +38,112 @@ function EntryRow({ icon, title, sub, color, className, onEdit, onDelete }: { ic
   );
 }
 
-export function EquipmentLibrary() {
+function EquipmentRow({
+  equipment,
+  party,
+  pending,
+  onEdit,
+  onDuplicate,
+  onDelete,
+  onDeliver,
+}: {
+  equipment: Equipment;
+  party: Character[];
+  pending?: boolean;
+  onEdit: () => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
+  onDeliver: (characterId: number) => void;
+}) {
+  const [giving, setGiving] = useState(false);
+  const rarity = RARITY[equipment.rarity];
+  return (
+    <li className={cn("grid gap-2 rounded-lg bg-elevated px-3 py-2 shadow-border ring-1", rarity.ring, rarity.glow)}>
+      <div className="flex items-center gap-3">
+        <span className={cn("grid size-12 shrink-0 place-items-center rounded-md bg-bg/50", rarity.text)}>
+          <GameIcon name={equipment.icon} className="size-9" rarity={rarity.key} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className={cn("truncate font-medium", rarity.text)}>{equipment.name}</p>
+          <p className="truncate text-xs text-subtle">
+            {[rarity.label, CATEGORY[equipment.category].where, formatModifiers(equipment.modifiers)]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        </div>
+        <button type="button" onClick={onDuplicate} aria-label={`Duplicar ${equipment.name}`} className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg">
+          <Copy className="size-4" />
+        </button>
+        <button type="button" onClick={onEdit} aria-label={`Editar ${equipment.name}`} className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg">
+          <Pencil className="size-4" />
+        </button>
+        <button type="button" onClick={onDelete} aria-label={`Excluir ${equipment.name}`} className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-hp-bright">
+          <Trash2 className="size-4" />
+        </button>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {giving && party.length > 0 ? (
+          <>
+            <Select
+              aria-label={`Entregar ${equipment.name} a`}
+              className="h-9 w-auto text-sm"
+              defaultValue=""
+              disabled={pending}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                if (id) {
+                  onDeliver(id);
+                  setGiving(false);
+                }
+              }}
+            >
+              <option value="">Escolha o jogador…</option>
+              {party.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </Select>
+            <Button type="button" size="sm" variant="ghost" onClick={() => setGiving(false)}>
+              Cancelar
+            </Button>
+          </>
+        ) : (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={pending || party.length === 0}
+            onClick={() => setGiving(true)}
+          >
+            Entregar
+          </Button>
+        )}
+      </div>
+    </li>
+  );
+}
+
+export function EquipmentLibrary({ party = [] }: { party?: Character[] }) {
   const { data } = useLibrary();
   const { run, pending } = useAct();
   const [editing, setEditing] = useState<Equipment | null>(null);
+  /** Cópia em edição: mesmos campos, sem id — salvar cria um novo equipamento. */
+  const [copying, setCopying] = useState<Equipment | null>(null);
+  const base = editing ?? copying;
   const list = data?.equipment ?? [];
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <Card>
         <CardHeader>
-          <CardTitle>{editing ? `Editar ${editing.name}` : "Forjar equipamento"}</CardTitle>
+          <CardTitle>
+            {editing ? `Editar ${editing.name}` : copying ? `Cópia de ${copying.name}` : "Forjar equipamento"}
+          </CardTitle>
           <CardDescription>A categoria define em que parte do corpo o item encaixa.</CardDescription>
         </CardHeader>
         <form
-          key={editing?.id ?? "new"}
+          key={editing ? `edit-${editing.id}` : copying ? `copy-${copying.id}` : "new"}
           className="grid gap-3"
           onSubmit={async (e) => {
             e.preventDefault();
@@ -73,18 +164,25 @@ export function EquipmentLibrary() {
               editing ? "Equipamento atualizado." : "Equipamento criado.",
             );
             setEditing(null);
+            setCopying(null);
             form.reset();
           }}
         >
           <div className="grid gap-1.5">
             <Label htmlFor="eq-name">Nome</Label>
-            <Input id="eq-name" name="name" required maxLength={80} defaultValue={editing?.name} />
+            <Input
+              id="eq-name"
+              name="name"
+              required
+              maxLength={80}
+              defaultValue={editing ? editing.name : copying ? `${copying.name} (cópia)` : ""}
+            />
           </div>
-          <IconField initial={editing?.icon ?? "sword"} category="equipment" />
+          <IconField initial={base?.icon ?? "sword"} category="equipment" />
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
               <Label htmlFor="eq-cat">Tipo / local</Label>
-              <Select id="eq-cat" name="category" defaultValue={editing?.category ?? "arma"}>
+              <Select id="eq-cat" name="category" defaultValue={base?.category ?? "arma"}>
                 {CATEGORIES.map((c) => (
                   <option key={c.key} value={c.key}>
                     {c.label} → {c.where}
@@ -94,7 +192,7 @@ export function EquipmentLibrary() {
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="eq-rar">Raridade</Label>
-              <Select id="eq-rar" name="rarity" defaultValue={editing?.rarity ?? "comum"}>
+              <Select id="eq-rar" name="rarity" defaultValue={base?.rarity ?? "comum"}>
                 {RARITIES.map((r) => (
                   <option key={r.key} value={r.key}>
                     {r.label}
@@ -105,19 +203,26 @@ export function EquipmentLibrary() {
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="eq-desc">Descrição</Label>
-            <Textarea id="eq-desc" name="description" rows={2} maxLength={400} defaultValue={editing?.description} />
+            <Textarea id="eq-desc" name="description" rows={2} maxLength={400} defaultValue={base?.description} />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="eq-eff">Efeitos especiais</Label>
-            <Input id="eq-eff" name="effects" maxLength={400} defaultValue={editing?.effects} placeholder="Ex.: Imune a fogo leve" />
+            <Input id="eq-eff" name="effects" maxLength={400} defaultValue={base?.effects} placeholder="Ex.: Imune a fogo leve" />
           </div>
-          <ModifierFields initial={editing?.modifiers} />
+          <ModifierFields initial={base?.modifiers} />
           <div className="flex gap-2">
             <Button type="submit" className="flex-1" disabled={pending}>
               {editing ? "Salvar alterações" : "Criar equipamento"}
             </Button>
-            {editing ? (
-              <Button type="button" variant="ghost" onClick={() => setEditing(null)}>
+            {base ? (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setEditing(null);
+                  setCopying(null);
+                }}
+              >
                 Cancelar
               </Button>
             ) : null}
@@ -132,13 +237,23 @@ export function EquipmentLibrary() {
         {list.length === 0 ? <p className="text-sm text-subtle">Nenhum equipamento.</p> : null}
         <ul className="grid gap-2">
           {list.map((e) => (
-            <EntryRow
+            <EquipmentRow
               key={e.id}
-              icon={e.icon}
-              title={e.name}
-              className={cn("ring-1", RARITY[e.rarity].ring, RARITY[e.rarity].glow)}
-              sub={[RARITY[e.rarity].label, CATEGORY[e.category].where, formatModifiers(e.modifiers)].filter(Boolean).join(" · ")}
-              onEdit={() => setEditing(e)}
+              equipment={e}
+              party={party}
+              pending={pending}
+              onEdit={() => {
+                setCopying(null);
+                setEditing(e);
+              }}
+              onDuplicate={() => {
+                setEditing(null);
+                setCopying(e);
+              }}
+              onDeliver={(characterId) => {
+                pushRecentEquipment({ id: e.id, name: e.name, icon: e.icon, rarity: e.rarity });
+                void run(() => api.gmGiveEquipment(characterId, e.id), `${e.name} entregue.`);
+              }}
               onDelete={() => {
                 if (confirm(`Excluir ${e.name}? Ele some do inventário de todos.`)) void run(() => api.deleteLibraryEntry("equipment", e.id), "Equipamento excluído.");
               }}
@@ -149,6 +264,7 @@ export function EquipmentLibrary() {
     </div>
   );
 }
+
 
 function EffectForm<T extends Effect | Condition>({
   kind,
