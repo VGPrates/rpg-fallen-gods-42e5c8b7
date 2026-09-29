@@ -1,4 +1,4 @@
-import { Dna, Hourglass, Lock, Shield, Signature } from "lucide-react";
+import { Dna, Hourglass, Lock, ScrollText, Shield, Signature } from "lucide-react";
 import { CLASSES, RACES } from "@/lib/rpg/constants";
 import type { Character, CharacterDraft } from "@/lib/rpg/types";
 import { Button } from "@/components/ui/button";
@@ -129,7 +129,7 @@ export function LockedIdentity({ character }: { character: Character }) {
       </dl>
       <div className="grid gap-1">
         <p className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.14em] text-subtle uppercase">
-          <Lock className="size-3" />
+          <ScrollText className="size-3" />
           História
         </p>
         <p className="whitespace-pre-wrap rounded-lg bg-elevated/60 px-3 py-2 text-sm text-muted shadow-border">
