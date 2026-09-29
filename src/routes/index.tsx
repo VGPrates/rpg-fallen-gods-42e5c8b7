@@ -1,24 +1,31 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { Landing } from "@/components/landing";
+import { LoadingScreen } from "@/components/app-chrome";
+import { useRpgState, useSession } from "@/lib/rpg/hooks";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "RPG Fallen Gods — O grimório da sua mesa de RPG" },
+      { name: "description", content: "Fichas, inventário, efeitos e o D20 compartilhado para a sua mesa de RPG de fantasia." },
+      { property: "og:title", content: "RPG Fallen Gods — O grimório da sua mesa de RPG" },
+      { property: "og:description", content: "Fichas, inventário, efeitos e o D20 compartilhado para a sua mesa de RPG de fantasia." },
+    ],
+  }),
+  component: Home,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+function Home() {
+  const { user, isPending } = useSession();
+  if (isPending) return <LoadingScreen />;
+  if (!user) return <Landing />;
+  return <SignedInHome />;
+}
+
+function SignedInHome() {
+  const { data, isPending, isError } = useRpgState();
+  if (isPending) return <LoadingScreen />;
+  if (isError) return <Navigate to="/login" />;
+  if (!data?.profile) return <Navigate to="/onboarding" />;
+  return <Navigate to={data.profile.role === "gm" ? "/mestre" : "/painel"} />;
 }
