@@ -17,21 +17,56 @@ import { GameIcon } from "@/components/game-icon";
 import { IconField, ModifierFields, readMods } from "@/components/equipment-fields";
 import { cn } from "@/lib/utils";
 
-
-function EntryRow({ icon, title, sub, color, className, onEdit, onDelete }: { icon: string; title: string; sub: string; color?: string; className?: string; onEdit: () => void; onDelete: () => void }) {
+function EntryRow({
+  icon,
+  title,
+  sub,
+  color,
+  className,
+  onEdit,
+  onDelete,
+}: {
+  icon: string;
+  title: string;
+  sub: string;
+  color?: string;
+  className?: string;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   return (
-    <li className={cn("flex items-center gap-3 rounded-lg bg-elevated px-3 py-2 shadow-border", className)}>
-      <span className="grid size-12 place-items-center rounded-md bg-bg/50" style={color ? { color } : undefined}>
+    <li
+      className={cn(
+        "flex items-center gap-3 rounded-lg bg-elevated px-3 py-2 shadow-border",
+        className,
+      )}
+    >
+      <span
+        className="grid size-12 place-items-center rounded-md bg-bg/50"
+        style={color ? { color } : undefined}
+      >
         <GameIcon name={icon} className="size-9" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate font-medium" style={color ? { color } : undefined}>{title}</p>
+        <p className="truncate font-medium" style={color ? { color } : undefined}>
+          {title}
+        </p>
         <p className="truncate text-xs text-subtle">{sub}</p>
       </div>
-      <button type="button" onClick={onEdit} aria-label={`Editar ${title}`} className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg">
+      <button
+        type="button"
+        onClick={onEdit}
+        aria-label={`Editar ${title}`}
+        className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg"
+      >
         <Pencil className="size-4" />
       </button>
-      <button type="button" onClick={onDelete} aria-label={`Excluir ${title}`} className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-hp-bright">
+      <button
+        type="button"
+        onClick={onDelete}
+        aria-label={`Excluir ${title}`}
+        className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-hp-bright"
+      >
         <Trash2 className="size-4" />
       </button>
     </li>
@@ -58,26 +93,56 @@ function EquipmentRow({
   const [giving, setGiving] = useState(false);
   const rarity = RARITY[equipment.rarity];
   return (
-    <li className={cn("grid gap-2 rounded-lg bg-elevated px-3 py-2 shadow-border ring-1", rarity.ring, rarity.glow)}>
+    <li
+      className={cn(
+        "grid gap-2 rounded-lg bg-elevated px-3 py-2 shadow-border ring-1",
+        rarity.ring,
+        rarity.glow,
+      )}
+    >
       <div className="flex items-center gap-3">
-        <span className={cn("grid size-12 shrink-0 place-items-center rounded-md bg-bg/50", rarity.text)}>
+        <span
+          className={cn(
+            "grid size-12 shrink-0 place-items-center rounded-md bg-bg/50",
+            rarity.text,
+          )}
+        >
           <GameIcon name={equipment.icon} className="size-9" rarity={rarity.key} />
         </span>
         <div className="min-w-0 flex-1">
           <p className={cn("truncate font-medium", rarity.text)}>{equipment.name}</p>
           <p className="truncate text-xs text-subtle">
-            {[rarity.label, CATEGORY[equipment.category].where, formatModifiers(equipment.modifiers)]
+            {[
+              rarity.label,
+              CATEGORY[equipment.category].where,
+              formatModifiers(equipment.modifiers),
+            ]
               .filter(Boolean)
               .join(" · ")}
           </p>
         </div>
-        <button type="button" onClick={onDuplicate} aria-label={`Duplicar ${equipment.name}`} className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg">
+        <button
+          type="button"
+          onClick={onDuplicate}
+          aria-label={`Duplicar ${equipment.name}`}
+          className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg"
+        >
           <Copy className="size-4" />
         </button>
-        <button type="button" onClick={onEdit} aria-label={`Editar ${equipment.name}`} className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg">
+        <button
+          type="button"
+          onClick={onEdit}
+          aria-label={`Editar ${equipment.name}`}
+          className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg"
+        >
           <Pencil className="size-4" />
         </button>
-        <button type="button" onClick={onDelete} aria-label={`Excluir ${equipment.name}`} className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-hp-bright">
+        <button
+          type="button"
+          onClick={onDelete}
+          aria-label={`Excluir ${equipment.name}`}
+          className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-hp-bright"
+        >
           <Trash2 className="size-4" />
         </button>
       </div>
@@ -138,9 +203,15 @@ export function EquipmentLibrary({ party = [] }: { party?: Character[] }) {
       <Card>
         <CardHeader>
           <CardTitle>
-            {editing ? `Editar ${editing.name}` : copying ? `Cópia de ${copying.name}` : "Forjar equipamento"}
+            {editing
+              ? `Editar ${editing.name}`
+              : copying
+                ? `Cópia de ${copying.name}`
+                : "Forjar equipamento"}
           </CardTitle>
-          <CardDescription>A categoria define em que parte do corpo o item encaixa.</CardDescription>
+          <CardDescription>
+            A categoria define em que parte do corpo o item encaixa.
+          </CardDescription>
         </CardHeader>
         <form
           key={editing ? `edit-${editing.id}` : copying ? `copy-${copying.id}` : "new"}
@@ -203,11 +274,23 @@ export function EquipmentLibrary({ party = [] }: { party?: Character[] }) {
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="eq-desc">Descrição</Label>
-            <Textarea id="eq-desc" name="description" rows={2} maxLength={400} defaultValue={base?.description} />
+            <Textarea
+              id="eq-desc"
+              name="description"
+              rows={2}
+              maxLength={400}
+              defaultValue={base?.description}
+            />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="eq-eff">Efeitos especiais</Label>
-            <Input id="eq-eff" name="effects" maxLength={400} defaultValue={base?.effects} placeholder="Ex.: Imune a fogo leve" />
+            <Input
+              id="eq-eff"
+              name="effects"
+              maxLength={400}
+              defaultValue={base?.effects}
+              placeholder="Ex.: Imune a fogo leve"
+            />
           </div>
           <ModifierFields initial={base?.modifiers} />
           <div className="flex gap-2">
@@ -255,7 +338,11 @@ export function EquipmentLibrary({ party = [] }: { party?: Character[] }) {
                 void run(() => api.gmGiveEquipment(characterId, e.id), `${e.name} entregue.`);
               }}
               onDelete={() => {
-                if (confirm(`Excluir ${e.name}? Ele some do inventário de todos.`)) void run(() => api.deleteLibraryEntry("equipment", e.id), "Equipamento excluído.");
+                if (confirm(`Excluir ${e.name}? Ele some do inventário de todos.`))
+                  void run(
+                    () => api.deleteLibraryEntry("equipment", e.id),
+                    "Equipamento excluído.",
+                  );
               }}
             />
           ))}
@@ -264,7 +351,6 @@ export function EquipmentLibrary({ party = [] }: { party?: Character[] }) {
     </div>
   );
 }
-
 
 function EffectForm<T extends Effect | Condition>({
   kind,
@@ -295,8 +381,14 @@ function EffectForm<T extends Effect | Condition>({
         await run(
           () =>
             isEffect
-              ? api.saveLibraryEntry("effects", editing?.id ?? null, { ...base, kind: String(f.get("kind")) })
-              : api.saveLibraryEntry("conditions", editing?.id ?? null, { ...base, effect: String(f.get("effect") ?? "").slice(0, 400) }),
+              ? api.saveLibraryEntry("effects", editing?.id ?? null, {
+                  ...base,
+                  kind: String(f.get("kind")),
+                })
+              : api.saveLibraryEntry("conditions", editing?.id ?? null, {
+                  ...base,
+                  effect: String(f.get("effect") ?? "").slice(0, 400),
+                }),
           "Salvo.",
         );
         form.reset();
@@ -306,11 +398,23 @@ function EffectForm<T extends Effect | Condition>({
       <div className="grid grid-cols-[minmax(0,1fr)_64px] gap-3">
         <div className="grid gap-1.5">
           <Label htmlFor={`${kind}-name`}>Nome</Label>
-          <Input id={`${kind}-name`} name="name" required maxLength={80} defaultValue={editing?.name} />
+          <Input
+            id={`${kind}-name`}
+            name="name"
+            required
+            maxLength={80}
+            defaultValue={editing?.name}
+          />
         </div>
         <div className="grid gap-1.5">
           <Label htmlFor={`${kind}-color`}>Cor</Label>
-          <input id={`${kind}-color`} name="color" type="color" defaultValue={editing?.color ?? (isEffect ? "#7fa065" : "#d0564d")} className="h-11 w-full cursor-pointer rounded-md bg-elevated p-1 shadow-border" />
+          <input
+            id={`${kind}-color`}
+            name="color"
+            type="color"
+            defaultValue={editing?.color ?? (isEffect ? "#7fa065" : "#d0564d")}
+            className="h-11 w-full cursor-pointer rounded-md bg-elevated p-1 shadow-border"
+          />
         </div>
       </div>
       <IconField
@@ -320,7 +424,11 @@ function EffectForm<T extends Effect | Condition>({
       {isEffect ? (
         <div className="grid gap-1.5">
           <Label htmlFor="effect-kind">Tipo</Label>
-          <Select id="effect-kind" name="kind" defaultValue={(editing as Effect | null)?.kind ?? "buff"}>
+          <Select
+            id="effect-kind"
+            name="kind"
+            defaultValue={(editing as Effect | null)?.kind ?? "buff"}
+          >
             <option value="buff">Buff</option>
             <option value="debuff">Debuff</option>
           </Select>
@@ -328,12 +436,24 @@ function EffectForm<T extends Effect | Condition>({
       ) : (
         <div className="grid gap-1.5">
           <Label htmlFor="cond-effect">Efeito</Label>
-          <Input id="cond-effect" name="effect" maxLength={400} defaultValue={(editing as Condition | null)?.effect} placeholder="Ex.: Perde 1 de vida por turno" />
+          <Input
+            id="cond-effect"
+            name="effect"
+            maxLength={400}
+            defaultValue={(editing as Condition | null)?.effect}
+            placeholder="Ex.: Perde 1 de vida por turno"
+          />
         </div>
       )}
       <div className="grid gap-1.5">
         <Label htmlFor={`${kind}-desc`}>Descrição</Label>
-        <Textarea id={`${kind}-desc`} name="description" rows={2} maxLength={400} defaultValue={editing?.description} />
+        <Textarea
+          id={`${kind}-desc`}
+          name="description"
+          rows={2}
+          maxLength={400}
+          defaultValue={editing?.description}
+        />
       </div>
       <ModifierFields initial={editing?.modifiers} />
       <div className="flex gap-2">
@@ -371,10 +491,13 @@ export function EffectsLibrary() {
               icon={e.icon}
               title={e.name}
               color={e.color}
-              sub={[e.kind === "buff" ? "Buff" : "Debuff", formatModifiers(e.modifiers)].filter(Boolean).join(" · ")}
+              sub={[e.kind === "buff" ? "Buff" : "Debuff", formatModifiers(e.modifiers)]
+                .filter(Boolean)
+                .join(" · ")}
               onEdit={() => setEditEffect(e)}
               onDelete={() => {
-                if (confirm(`Excluir ${e.name}?`)) void run(() => api.deleteLibraryEntry("effects", e.id), "Excluído.");
+                if (confirm(`Excluir ${e.name}?`))
+                  void run(() => api.deleteLibraryEntry("effects", e.id), "Excluído.");
               }}
             />
           ))}
@@ -396,7 +519,8 @@ export function EffectsLibrary() {
               sub={[c.effect, formatModifiers(c.modifiers)].filter(Boolean).join(" · ")}
               onEdit={() => setEditCond(c)}
               onDelete={() => {
-                if (confirm(`Excluir ${c.name}?`)) void run(() => api.deleteLibraryEntry("conditions", c.id), "Excluída.");
+                if (confirm(`Excluir ${c.name}?`))
+                  void run(() => api.deleteLibraryEntry("conditions", c.id), "Excluída.");
               }}
             />
           ))}

@@ -19,11 +19,7 @@ export async function getLibrary() {
   return fns.getLibraryFn();
 }
 
-export async function chooseRole(
-  role: Role,
-  displayName: string,
-  character?: CharacterDraft,
-) {
+export async function chooseRole(role: Role, displayName: string, character?: CharacterDraft) {
   return fns.chooseRoleFn({
     data: {
       role,
@@ -49,7 +45,10 @@ export async function spendPoints(characterId: number, alloc: Partial<Record<Sta
   return fns.spendPointsFn({ data: { characterId, alloc } });
 }
 
-export async function gmSetStats(characterId: number, s: Record<StatKey, number> & { unspent: number }) {
+export async function gmSetStats(
+  characterId: number,
+  s: Record<StatKey, number> & { unspent: number },
+) {
   return fns.gmSetStatsFn({ data: { characterId, stats: s } });
 }
 
@@ -59,7 +58,14 @@ export async function gmGrantPoints(characterId: number, amount: number) {
 
 export async function gmUpdateVitals(
   characterId: number,
-  v: { hp: number; hpMax: number; mana: number; manaMax: number; stamina: number; staminaMax: number },
+  v: {
+    hp: number;
+    hpMax: number;
+    mana: number;
+    manaMax: number;
+    stamina: number;
+    staminaMax: number;
+  },
 ) {
   return fns.gmUpdateVitalsFn({ data: { characterId, vitals: v } });
 }
@@ -109,10 +115,13 @@ export async function gmQuickCreateEquipment(
   });
 }
 
-
 type LibTable = "equipment" | "effects" | "conditions";
 
-export async function saveLibraryEntry(table: LibTable, id: number | null, values: Record<string, unknown>) {
+export async function saveLibraryEntry(
+  table: LibTable,
+  id: number | null,
+  values: Record<string, unknown>,
+) {
   return fns.saveLibraryEntryFn({ data: { table, id, values } });
 }
 

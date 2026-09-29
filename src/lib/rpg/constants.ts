@@ -82,13 +82,44 @@ export function slotAccepts(category: EquipmentCategory, slot: BodySlot) {
   return CATEGORY[category]?.slots.includes(slot) ?? false;
 }
 
-export const RARITIES: { key: Rarity; label: string; text: string; ring: string; glow: string }[] = [
-  { key: "comum", label: "Comum", text: "text-rarity-comum", ring: "ring-rarity-comum/40", glow: "" },
-  { key: "incomum", label: "Incomum", text: "text-rarity-incomum", ring: "ring-rarity-incomum/60", glow: "" },
-  { key: "raro", label: "Raro", text: "text-rarity-raro", ring: "ring-rarity-raro/70", glow: "shadow-[0_0_14px_-4px_var(--color-rarity-raro)]" },
-  { key: "epico", label: "Épico", text: "text-rarity-epico", ring: "ring-rarity-epico/80", glow: "shadow-[0_0_16px_-3px_var(--color-rarity-epico)]" },
-  { key: "lendario", label: "Lendário", text: "text-rarity-lendario", ring: "ring-rarity-lendario", glow: "rarity-legendary" },
-];
+export const RARITIES: { key: Rarity; label: string; text: string; ring: string; glow: string }[] =
+  [
+    {
+      key: "comum",
+      label: "Comum",
+      text: "text-rarity-comum",
+      ring: "ring-rarity-comum/40",
+      glow: "",
+    },
+    {
+      key: "incomum",
+      label: "Incomum",
+      text: "text-rarity-incomum",
+      ring: "ring-rarity-incomum/60",
+      glow: "",
+    },
+    {
+      key: "raro",
+      label: "Raro",
+      text: "text-rarity-raro",
+      ring: "ring-rarity-raro/70",
+      glow: "shadow-[0_0_14px_-4px_var(--color-rarity-raro)]",
+    },
+    {
+      key: "epico",
+      label: "Épico",
+      text: "text-rarity-epico",
+      ring: "ring-rarity-epico/80",
+      glow: "shadow-[0_0_16px_-3px_var(--color-rarity-epico)]",
+    },
+    {
+      key: "lendario",
+      label: "Lendário",
+      text: "text-rarity-lendario",
+      ring: "ring-rarity-lendario",
+      glow: "rarity-legendary",
+    },
+  ];
 
 export const RARITY = Object.fromEntries(RARITIES.map((r) => [r.key, r])) as Record<
   Rarity,

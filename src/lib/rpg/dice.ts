@@ -1,11 +1,4 @@
-export type DiceTier =
-  | "crit-fail"
-  | "fail"
-  | "feijoada"
-  | "close"
-  | "good"
-  | "great"
-  | "crit";
+export type DiceTier = "crit-fail" | "fail" | "feijoada" | "close" | "good" | "great" | "crit";
 
 export type DiceVerdict = {
   value: number;

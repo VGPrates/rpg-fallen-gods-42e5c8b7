@@ -147,7 +147,13 @@ export async function createCustomIcon(input: {
   const key = `custom_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   setCustomIcons([
     ...customIcons,
-    { key, label: input.label.slice(0, 40), category: input.category, src: input.dataUrl, custom: true },
+    {
+      key,
+      label: input.label.slice(0, 40),
+      category: input.category,
+      src: input.dataUrl,
+      custom: true,
+    },
   ]);
   return key;
 }

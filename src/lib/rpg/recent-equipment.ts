@@ -17,7 +17,9 @@ export function readRecentEquipment(): RecentEquipment[] {
     const raw = window.localStorage.getItem(KEY);
     const parsed: unknown = raw ? JSON.parse(raw) : [];
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((e): e is RecentEquipment => !!e && typeof (e as RecentEquipment).id === "number");
+    return parsed.filter(
+      (e): e is RecentEquipment => !!e && typeof (e as RecentEquipment).id === "number",
+    );
   } catch {
     return [];
   }

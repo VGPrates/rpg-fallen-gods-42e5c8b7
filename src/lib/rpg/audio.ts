@@ -2,7 +2,9 @@ let sharedCtx: AudioContext | null = null;
 
 function ctx(): AudioContext | null {
   if (typeof window === "undefined") return null;
-  const Ctor = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  const Ctor =
+    window.AudioContext ||
+    (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
   if (!Ctor) return null;
   if (!sharedCtx) sharedCtx = new Ctor();
   if (sharedCtx.state === "suspended") void sharedCtx.resume();

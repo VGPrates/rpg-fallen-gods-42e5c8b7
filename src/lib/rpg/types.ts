@@ -13,13 +13,7 @@ export type BodySlot =
   | "acessorio";
 
 export type EquipmentCategory =
-  | "elmo"
-  | "armadura"
-  | "calca"
-  | "arma"
-  | "escudo"
-  | "bota"
-  | "acessorio";
+  "elmo" | "armadura" | "calca" | "arma" | "escudo" | "bota" | "acessorio";
 
 export type Rarity = "comum" | "incomum" | "raro" | "epico" | "lendario";
 

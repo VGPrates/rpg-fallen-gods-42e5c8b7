@@ -29,14 +29,19 @@ import { ValueStepper } from "@/components/value-stepper";
 export function GmPanel({ profile, party }: { profile: Profile; party: Character[] }) {
   const [tab, setTab] = useState("fichas");
   const [selectedId, setSelectedId] = useState<number | "new">(party[0]?.id ?? "new");
-  const selected = useMemo(() => party.find((c) => c.id === selectedId) ?? null, [party, selectedId]);
+  const selected = useMemo(
+    () => party.find((c) => c.id === selectedId) ?? null,
+    [party, selectedId],
+  );
   useDiceToasts(profile.userId, tab === "dado");
 
   return (
     <AppChrome roleLabel="Mestre da Mesa" profile={profile}>
       <div className="grid gap-6">
         <div>
-          <p className="text-xs tracking-[0.2em] text-muted uppercase">{profile.displayName ?? "Mestre"}</p>
+          <p className="text-xs tracking-[0.2em] text-muted uppercase">
+            {profile.displayName ?? "Mestre"}
+          </p>
           <h1 className="font-display text-3xl">A mesa</h1>
           <p className="text-muted">Fichas, arsenal, efeitos e o D20 — tudo passa por aqui.</p>
         </div>
@@ -58,7 +63,10 @@ export function GmPanel({ profile, party }: { profile: Profile; party: Character
               <button
                 type="button"
                 onClick={() => setSelectedId("new")}
-                className={cn("min-h-11 rounded-lg px-3 text-left text-sm", selectedId === "new" ? "bg-elevated" : "text-muted hover:text-fg")}
+                className={cn(
+                  "min-h-11 rounded-lg px-3 text-left text-sm",
+                  selectedId === "new" ? "bg-elevated" : "text-muted hover:text-fg",
+                )}
               >
                 Nova ficha
               </button>
@@ -70,11 +78,21 @@ export function GmPanel({ profile, party }: { profile: Profile; party: Character
                     key={c.id}
                     type="button"
                     onClick={() => setSelectedId(c.id)}
-                    className={cn("min-h-11 rounded-lg px-3 py-2 text-left", selected?.id === c.id ? "bg-elevated" : "hover:bg-elevated/50")}
+                    className={cn(
+                      "min-h-11 rounded-lg px-3 py-2 text-left",
+                      selected?.id === c.id ? "bg-elevated" : "hover:bg-elevated/50",
+                    )}
                   >
                     <span className="flex items-center gap-1 truncate font-medium">
                       {c.name}
-                      <span className="text-xs">{[...c.effects.map((e) => e.effect.icon), ...c.conditions.map((x) => x.condition.icon)].slice(0, 4).join("")}</span>
+                      <span className="text-xs">
+                        {[
+                          ...c.effects.map((e) => e.effect.icon),
+                          ...c.conditions.map((x) => x.condition.icon),
+                        ]
+                          .slice(0, 4)
+                          .join("")}
+                      </span>
                     </span>
                     <span className="block truncate text-xs text-subtle">
                       {c.userId ? "Jogador" : "Mesa"} · {c.className}
@@ -109,7 +127,9 @@ function CreateSheet({ onCreated }: { onCreated: (id: number) => void }) {
     <Card>
       <CardHeader>
         <CardTitle>Criar ficha</CardTitle>
-        <CardDescription>Personagens da mesa ficam com você. Jogadores criam a própria ficha ao entrar.</CardDescription>
+        <CardDescription>
+          Personagens da mesa ficam com você. Jogadores criam a própria ficha ao entrar.
+        </CardDescription>
       </CardHeader>
       <CharacterForm
         submitLabel="Criar ficha"
@@ -138,7 +158,9 @@ function GmEditor({ character }: { character: Character }) {
         <Badge>
           {character.race} · {character.className}
         </Badge>
-        {character.unspentPoints > 0 ? <Badge>{character.unspentPoints} pontos livres</Badge> : null}
+        {character.unspentPoints > 0 ? (
+          <Badge>{character.unspentPoints} pontos livres</Badge>
+        ) : null}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -162,7 +184,13 @@ function GmEditor({ character }: { character: Character }) {
               void run(() => api.gmGrantPoints(character.id, amount), "Pontos concedidos.");
             }}
           >
-            <ValueStepper name="amount" defaultValue={1} min={1} max={50} ariaLabel="pontos a conceder" />
+            <ValueStepper
+              name="amount"
+              defaultValue={1}
+              min={1}
+              max={50}
+              ariaLabel="pontos a conceder"
+            />
             <Button type="submit" disabled={pending}>
               Conceder pontos
             </Button>
@@ -180,22 +208,31 @@ function GmEditor({ character }: { character: Character }) {
             effects={character.effects}
             conditions={character.conditions}
             onRemoveEffect={(id) => run(() => api.removeAppliedEffect(id), "Efeito removido.")}
-            onRemoveCondition={(id) => run(() => api.removeAppliedCondition(id), "Condição removida.")}
+            onRemoveCondition={(id) =>
+              run(() => api.removeAppliedCondition(id), "Condição removida.")
+            }
           />
           <div className="mt-5 grid gap-3">
             <ApplyForm
               label="Aplicar buff/debuff"
-              options={(lib?.effects ?? []).map((e) => ({ id: e.id, label: `${e.name} (${e.kind === "buff" ? "buff" : "debuff"})` }))}
+              options={(lib?.effects ?? []).map((e) => ({
+                id: e.id,
+                label: `${e.name} (${e.kind === "buff" ? "buff" : "debuff"})`,
+              }))}
               defaultDuration="Permanente"
               pending={pending}
-              onApply={(id, d) => run(() => api.applyEffect(character.id, id, d), "Efeito aplicado.")}
+              onApply={(id, d) =>
+                run(() => api.applyEffect(character.id, id, d), "Efeito aplicado.")
+              }
             />
             <ApplyForm
               label="Aplicar condição"
               options={(lib?.conditions ?? []).map((c) => ({ id: c.id, label: c.name }))}
               defaultDuration="Até ser curado"
               pending={pending}
-              onApply={(id, d) => run(() => api.applyCondition(character.id, id, d), "Condição aplicada.")}
+              onApply={(id, d) =>
+                run(() => api.applyCondition(character.id, id, d), "Condição aplicada.")
+              }
             />
           </div>
         </Card>
@@ -215,7 +252,15 @@ function GmEditor({ character }: { character: Character }) {
                 const f = new FormData(e.currentTarget);
                 const n = (k: string) => Number(f.get(k));
                 void run(
-                  () => api.gmUpdateVitals(character.id, { hp: n("hp"), hpMax: n("hpMax"), mana: n("mana"), manaMax: n("manaMax"), stamina: n("stamina"), staminaMax: n("staminaMax") }),
+                  () =>
+                    api.gmUpdateVitals(character.id, {
+                      hp: n("hp"),
+                      hpMax: n("hpMax"),
+                      mana: n("mana"),
+                      manaMax: n("manaMax"),
+                      stamina: n("stamina"),
+                      staminaMax: n("staminaMax"),
+                    }),
                   "Vitais ajustados.",
                 );
               }}
@@ -225,7 +270,11 @@ function GmEditor({ character }: { character: Character }) {
               <VitalField name="mana" label="Mana" defaultValue={character.mana} />
               <VitalField name="manaMax" label="Mana máx." defaultValue={character.manaMax} />
               <VitalField name="stamina" label="Estamina" defaultValue={character.stamina} />
-              <VitalField name="staminaMax" label="Estamina máx." defaultValue={character.staminaMax} />
+              <VitalField
+                name="staminaMax"
+                label="Estamina máx."
+                defaultValue={character.staminaMax}
+              />
               <div className="col-span-2 sm:col-span-3">
                 <Button type="submit" disabled={pending} variant="secondary">
                   Atualizar vitais
@@ -242,7 +291,8 @@ function GmEditor({ character }: { character: Character }) {
               onSubmit={(e) => {
                 e.preventDefault();
                 const id = Number(new FormData(e.currentTarget).get("equipment"));
-                if (id) void run(() => api.gmGiveEquipment(character.id, id), "Equipamento entregue.");
+                if (id)
+                  void run(() => api.gmGiveEquipment(character.id, id), "Equipamento entregue.");
               }}
             >
               <Select name="equipment" aria-label="Equipamento" defaultValue="">
@@ -266,14 +316,18 @@ function GmEditor({ character }: { character: Character }) {
       <Card>
         <CardHeader>
           <CardTitle>Ficha</CardTitle>
-          <CardDescription>Identidade travada para o jogador — só você pode corrigir.</CardDescription>
+          <CardDescription>
+            Identidade travada para o jogador — só você pode corrigir.
+          </CardDescription>
         </CardHeader>
         <CharacterForm
           key={character.updatedAt}
           initial={character}
           submitLabel="Salvar ficha"
           pending={pending}
-          onSubmit={(draft) => run(() => api.gmUpdateIdentity(character.id, draft), "Ficha atualizada.")}
+          onSubmit={(draft) =>
+            run(() => api.gmUpdateIdentity(character.id, draft), "Ficha atualizada.")
+          }
         />
       </Card>
 
@@ -303,7 +357,8 @@ function GmEditor({ character }: { character: Character }) {
           variant="destructive"
           disabled={pending}
           onClick={() => {
-            if (confirm(`Remover ${character.name} da mesa?`)) void run(() => api.gmDeleteCharacter(character.id), "Ficha da mesa removida.");
+            if (confirm(`Remover ${character.name} da mesa?`))
+              void run(() => api.gmDeleteCharacter(character.id), "Ficha da mesa removida.");
           }}
         >
           Remover ficha da mesa
@@ -357,7 +412,15 @@ function ApplyForm({
   );
 }
 
-function VitalField({ name, label, defaultValue }: { name: string; label: string; defaultValue: number }) {
+function VitalField({
+  name,
+  label,
+  defaultValue,
+}: {
+  name: string;
+  label: string;
+  defaultValue: number;
+}) {
   return (
     <div className="grid gap-1.5">
       <Label htmlFor={name}>{label}</Label>

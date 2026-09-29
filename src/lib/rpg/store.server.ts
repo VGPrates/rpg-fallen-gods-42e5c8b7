@@ -153,13 +153,21 @@ async function requireGmCharacter(sql: Sql, userId: string, characterId: number)
   return row;
 }
 
-async function requireOwnCharacter(sql: Sql, userId: string, characterId: number): Promise<CharRow> {
+async function requireOwnCharacter(
+  sql: Sql,
+  userId: string,
+  characterId: number,
+): Promise<CharRow> {
   const row = await characterRow(sql, characterId);
   if (!row || row.user_id !== userId) throw new Error("Ficha não encontrada.");
   return row;
 }
 
-async function requireViewCharacter(sql: Sql, userId: string, characterId: number): Promise<CharRow> {
+async function requireViewCharacter(
+  sql: Sql,
+  userId: string,
+  characterId: number,
+): Promise<CharRow> {
   const role = await roleOf(sql, userId);
   if (!role) throw new Error("Não autenticado.");
   const row = await characterRow(sql, characterId);
@@ -350,7 +358,8 @@ async function hydrateCharacters(sql: Sql, rows: CharRow[]): Promise<Character[]
 }
 
 async function loadProfile(sql: Sql, userId: string, role: Role): Promise<Profile> {
-  const rows = await sql<ProfileRow>`select user_id, display_name, avatar_url from profiles where user_id = ${userId}`;
+  const rows =
+    await sql<ProfileRow>`select user_id, display_name, avatar_url from profiles where user_id = ${userId}`;
   const p = rows[0];
   const table = role === "gm" ? await tableOfGm(sql, userId) : await tableOfPlayer(sql, userId);
   return {
@@ -389,7 +398,8 @@ export async function getMyState(userId: string): Promise<RpgState> {
   const profile = await loadProfile(sql, userId, role);
   if (role === "gm") {
     if (!profile.tableId) return { profile, character: null, party: [] };
-    const rows = await sql<CharRow>`select * from characters where table_id = ${profile.tableId} order by id`;
+    const rows =
+      await sql<CharRow>`select * from characters where table_id = ${profile.tableId} order by id`;
     return { profile, character: null, party: await hydrateCharacters(sql, rows) };
   }
   const rows = await sql<CharRow>`select * from characters where user_id = ${userId} limit 1`;
@@ -423,7 +433,6 @@ export async function getLibrary() {
     conditions: conditions.map(mapCondition),
   };
 }
-
 
 export async function chooseRoleForUser(
   userId: string,
@@ -496,17 +505,25 @@ export async function updateMyAvatar(userId: string, avatar: string | null) {
   `;
 }
 
-export async function spendPoints(userId: string, characterId: number, alloc: Partial<Record<StatKey, number>>) {
+export async function spendPoints(
+  userId: string,
+  characterId: number,
+  alloc: Partial<Record<StatKey, number>>,
+) {
   const sql = await getSql();
   const row = await requireOwnCharacter(sql, userId, characterId);
-  const spent = STAT_KEYS.reduce((sum, k) => sum + Math.max(0, Math.floor(Number(alloc[k] ?? 0))), 0);
+  const spent = STAT_KEYS.reduce(
+    (sum, k) => sum + Math.max(0, Math.floor(Number(alloc[k] ?? 0))),
+    0,
+  );
   if (spent <= 0) return;
   if (spent > asInt(row.unspent_points)) throw new Error("Pontos insuficientes.");
   const next = {
     strength: asInt(row.strength) + Math.max(0, Math.floor(Number(alloc.strength ?? 0))),
     agility: asInt(row.agility) + Math.max(0, Math.floor(Number(alloc.agility ?? 0))),
     resistance: asInt(row.resistance) + Math.max(0, Math.floor(Number(alloc.resistance ?? 0))),
-    intelligence: asInt(row.intelligence) + Math.max(0, Math.floor(Number(alloc.intelligence ?? 0))),
+    intelligence:
+      asInt(row.intelligence) + Math.max(0, Math.floor(Number(alloc.intelligence ?? 0))),
     presence: asInt(row.presence) + Math.max(0, Math.floor(Number(alloc.presence ?? 0))),
     unspent: Math.max(0, asInt(row.unspent_points) - spent),
   };
@@ -549,7 +566,14 @@ export async function gmGrantPoints(userId: string, characterId: number, amount:
 export async function gmUpdateVitals(
   userId: string,
   characterId: number,
-  v: { hp: number; hpMax: number; mana: number; manaMax: number; stamina: number; staminaMax: number },
+  v: {
+    hp: number;
+    hpMax: number;
+    mana: number;
+    manaMax: number;
+    stamina: number;
+    staminaMax: number;
+  },
 ) {
   const sql = await getSql();
   await requireGmCharacter(sql, userId, characterId);
@@ -610,7 +634,12 @@ export async function addItem(
 }
 
 async function itemOwner(sql: Sql, itemId: number) {
-  const rows = await sql<{ id: number; character_id: number; equipment_id: number | null; equipped_slot: string | null }>`
+  const rows = await sql<{
+    id: number;
+    character_id: number;
+    equipment_id: number | null;
+    equipped_slot: string | null;
+  }>`
     select id, character_id, equipment_id, equipped_slot from inventory_items where id = ${itemId}
   `;
   if (!rows[0]) throw new Error("Item não encontrado.");
@@ -681,13 +710,13 @@ export async function gmQuickCreateEquipment(
     throw new Error("Equipamento temporário precisa de um jogador.");
   }
 
-  const name = String(values['name'] ?? "Novo").slice(0, 80) || "Novo";
-  const icon = String(values['icon'] ?? "sword").slice(0, 80);
-  const category = String(values['category'] ?? "arma");
-  const rarity = String(values['rarity'] ?? "comum");
-  const description = String(values['description'] ?? "").slice(0, 400);
-  const effects = String(values['effects'] ?? "").slice(0, 400);
-  const modifiers = JSON.stringify(asModifiers(values['modifiers']));
+  const name = String(values["name"] ?? "Novo").slice(0, 80) || "Novo";
+  const icon = String(values["icon"] ?? "sword").slice(0, 80);
+  const category = String(values["category"] ?? "arma");
+  const rarity = String(values["rarity"] ?? "comum");
+  const description = String(values["description"] ?? "").slice(0, 400);
+  const effects = String(values["effects"] ?? "").slice(0, 400);
+  const modifiers = JSON.stringify(asModifiers(values["modifiers"]));
 
   const created = await sql.query<{ id: number }>(
     `insert into equipment (name, icon, category, rarity, description, effects, modifiers, is_temporary)
@@ -707,7 +736,6 @@ export async function gmQuickCreateEquipment(
   return { id: equipmentId, name, icon, rarity, temporary: options.temporary };
 }
 
-
 export type LibTable = "equipment" | "effects" | "conditions";
 
 export async function saveLibraryEntry(
@@ -718,14 +746,14 @@ export async function saveLibraryEntry(
 ) {
   const sql = await getSql();
   await requireGm(sql, userId);
-  const name = String(values['name'] ?? "Novo").slice(0, 80);
-  const icon = String(values['icon'] ?? "sword").slice(0, 80);
-  const description = String(values['description'] ?? "").slice(0, 400);
-  const modifiers = JSON.stringify(asModifiers(values['modifiers']));
+  const name = String(values["name"] ?? "Novo").slice(0, 80);
+  const icon = String(values["icon"] ?? "sword").slice(0, 80);
+  const description = String(values["description"] ?? "").slice(0, 400);
+  const modifiers = JSON.stringify(asModifiers(values["modifiers"]));
   if (table === "equipment") {
-    const category = String(values['category'] ?? "arma");
-    const rarity = String(values['rarity'] ?? "comum");
-    const effects = String(values['effects'] ?? "").slice(0, 400);
+    const category = String(values["category"] ?? "arma");
+    const rarity = String(values["rarity"] ?? "comum");
+    const effects = String(values["effects"] ?? "").slice(0, 400);
     if (id) {
       await sql.query(
         `update equipment set name=$1, icon=$2, category=$3, rarity=$4, description=$5, effects=$6, modifiers=$7::jsonb, updated_at=now() where id=$8`,
@@ -740,8 +768,8 @@ export async function saveLibraryEntry(
     return;
   }
   if (table === "effects") {
-    const kind = String(values['kind'] ?? "buff");
-    const color = String(values['color'] ?? "#7fa065");
+    const kind = String(values["kind"] ?? "buff");
+    const color = String(values["color"] ?? "#7fa065");
     if (id) {
       await sql.query(
         `update effects set kind=$1, name=$2, icon=$3, color=$4, description=$5, modifiers=$6::jsonb where id=$7`,
@@ -755,8 +783,8 @@ export async function saveLibraryEntry(
     }
     return;
   }
-  const color = String(values['color'] ?? "#d0564d");
-  const effect = String(values['effect'] ?? "").slice(0, 400);
+  const color = String(values["color"] ?? "#d0564d");
+  const effect = String(values["effect"] ?? "").slice(0, 400);
   if (id) {
     await sql.query(
       `update conditions set name=$1, icon=$2, color=$3, description=$4, effect=$5, modifiers=$6::jsonb where id=$7`,
@@ -778,7 +806,12 @@ export async function deleteLibraryEntry(userId: string, table: LibTable, id: nu
   else await sql`delete from conditions where id = ${id}`;
 }
 
-export async function applyEffect(userId: string, characterId: number, effectId: number, duration: string) {
+export async function applyEffect(
+  userId: string,
+  characterId: number,
+  effectId: number,
+  duration: string,
+) {
   const sql = await getSql();
   await requireGmCharacter(sql, userId, characterId);
   const found = await sql<{ id: number }>`select id from effects where id = ${effectId}`;
@@ -791,13 +824,20 @@ export async function applyEffect(userId: string, characterId: number, effectId:
 
 export async function removeAppliedEffect(userId: string, id: number) {
   const sql = await getSql();
-  const rows = await sql<{ character_id: number }>`select character_id from character_effects where id = ${id}`;
+  const rows = await sql<{
+    character_id: number;
+  }>`select character_id from character_effects where id = ${id}`;
   if (!rows[0]) return;
   await requireGmCharacter(sql, userId, asInt(rows[0].character_id));
   await sql`delete from character_effects where id = ${id}`;
 }
 
-export async function applyCondition(userId: string, characterId: number, conditionId: number, duration: string) {
+export async function applyCondition(
+  userId: string,
+  characterId: number,
+  conditionId: number,
+  duration: string,
+) {
   const sql = await getSql();
   await requireGmCharacter(sql, userId, characterId);
   const found = await sql<{ id: number }>`select id from conditions where id = ${conditionId}`;
@@ -810,7 +850,9 @@ export async function applyCondition(userId: string, characterId: number, condit
 
 export async function removeAppliedCondition(userId: string, id: number) {
   const sql = await getSql();
-  const rows = await sql<{ character_id: number }>`select character_id from character_conditions where id = ${id}`;
+  const rows = await sql<{
+    character_id: number;
+  }>`select character_id from character_conditions where id = ${id}`;
   if (!rows[0]) return;
   await requireGmCharacter(sql, userId, asInt(rows[0].character_id));
   await sql`delete from character_conditions where id = ${id}`;
@@ -824,7 +866,10 @@ export async function rollD20(userId: string): Promise<DiceRoll> {
   let rollerName = profile.displayName || (role === "gm" ? "Mestre" : "Aventureiro");
   let characterId: number | null = null;
   if (role === "player") {
-    const chars = await sql<{ id: number; name: string }>`select id, name from characters where user_id = ${userId} limit 1`;
+    const chars = await sql<{
+      id: number;
+      name: string;
+    }>`select id, name from characters where user_id = ${userId} limit 1`;
     if (chars[0]) {
       characterId = asInt(chars[0].id);
       rollerName = chars[0].name;
@@ -851,12 +896,24 @@ export async function recentRolls(userId: string): Promise<DiceRoll[]> {
   if (!role) return [];
   const profile = await loadProfile(sql, userId, role);
   const rows = profile.tableId
-    ? await sql<{ id: number; user_id: string; roller_name: string; value: number; created_at: unknown }>`
+    ? await sql<{
+        id: number;
+        user_id: string;
+        roller_name: string;
+        value: number;
+        created_at: unknown;
+      }>`
         select id, user_id, roller_name, value, created_at
         from dice_rolls where table_id = ${profile.tableId}
         order by id desc limit 8
       `
-    : await sql<{ id: number; user_id: string; roller_name: string; value: number; created_at: unknown }>`
+    : await sql<{
+        id: number;
+        user_id: string;
+        roller_name: string;
+        value: number;
+        created_at: unknown;
+      }>`
         select id, user_id, roller_name, value, created_at
         from dice_rolls where user_id = ${userId}
         order by id desc limit 8

@@ -5,10 +5,20 @@ import { CATEGORIES, CATEGORY, RARITIES, RARITY } from "@/lib/rpg/constants";
 import { useLibrary } from "@/lib/rpg/hooks";
 import { formatModifiers } from "@/lib/rpg/stats";
 import { useAct } from "@/lib/rpg/use-act";
-import { pushRecentEquipment, readRecentEquipment, type RecentEquipment } from "@/lib/rpg/recent-equipment";
+import {
+  pushRecentEquipment,
+  readRecentEquipment,
+  type RecentEquipment,
+} from "@/lib/rpg/recent-equipment";
 import type { Character, Equipment } from "@/lib/rpg/types";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -84,9 +94,17 @@ function QuickEquipmentPanel({ character, onDone }: { character: Character; onDo
 function useDeliver(character: Character) {
   const { run, pending } = useAct();
   const deliver = async (equipment: Pick<Equipment, "id" | "name" | "icon" | "rarity">) => {
-    const ok = await run(() => api.gmGiveEquipment(character.id, equipment.id), `${equipment.name} entregue a ${character.name}.`);
+    const ok = await run(
+      () => api.gmGiveEquipment(character.id, equipment.id),
+      `${equipment.name} entregue a ${character.name}.`,
+    );
     if (ok) {
-      pushRecentEquipment({ id: equipment.id, name: equipment.name, icon: equipment.icon, rarity: equipment.rarity });
+      pushRecentEquipment({
+        id: equipment.id,
+        name: equipment.name,
+        icon: equipment.icon,
+        rarity: equipment.rarity,
+      });
     }
     return ok;
   };
@@ -101,7 +119,9 @@ function ArsenalSearch({ character, onDone }: { character: Character; onDone: ()
     const all = data?.equipment ?? [];
     const term = q.trim().toLowerCase();
     if (!term) return all;
-    return all.filter((e) => e.name.toLowerCase().includes(term) || e.description.toLowerCase().includes(term));
+    return all.filter(
+      (e) => e.name.toLowerCase().includes(term) || e.description.toLowerCase().includes(term),
+    );
   }, [data, q]);
 
   return (
@@ -119,14 +139,27 @@ function ArsenalSearch({ character, onDone }: { character: Character; onDone: ()
           {list.map((e) => {
             const rarity = RARITY[e.rarity];
             return (
-              <li key={e.id} className={cn("flex items-center gap-3 rounded-lg bg-elevated px-3 py-2 shadow-border ring-1", rarity.ring)}>
-                <span className={cn("grid size-10 shrink-0 place-items-center rounded-md bg-bg/50", rarity.text)}>
+              <li
+                key={e.id}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg bg-elevated px-3 py-2 shadow-border ring-1",
+                  rarity.ring,
+                )}
+              >
+                <span
+                  className={cn(
+                    "grid size-10 shrink-0 place-items-center rounded-md bg-bg/50",
+                    rarity.text,
+                  )}
+                >
                   <GameIcon name={e.icon} className="size-8" rarity={rarity.key} />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className={cn("truncate font-medium", rarity.text)}>{e.name}</p>
                   <p className="truncate text-xs text-subtle">
-                    {[rarity.label, CATEGORY[e.category].where, formatModifiers(e.modifiers)].filter(Boolean).join(" · ")}
+                    {[rarity.label, CATEGORY[e.category].where, formatModifiers(e.modifiers)]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </p>
                 </div>
                 <Button
@@ -154,20 +187,35 @@ function RecentList({ character, onDone }: { character: Character; onDone: () =>
   useEffect(() => setItems(readRecentEquipment()), []);
 
   if (items.length === 0) {
-    return <p className="text-sm text-subtle">Nada ainda. Os últimos equipamentos criados ou entregues aparecem aqui.</p>;
+    return (
+      <p className="text-sm text-subtle">
+        Nada ainda. Os últimos equipamentos criados ou entregues aparecem aqui.
+      </p>
+    );
   }
   return (
     <ul className="grid max-h-80 gap-2 overflow-y-auto pr-1">
       {items.map((e) => {
         const rarity = RARITY[e.rarity] ?? RARITY.comum;
         return (
-          <li key={e.id} className="flex items-center gap-3 rounded-lg bg-elevated px-3 py-2 shadow-border">
-            <span className={cn("grid size-10 shrink-0 place-items-center rounded-md bg-bg/50", rarity.text)}>
+          <li
+            key={e.id}
+            className="flex items-center gap-3 rounded-lg bg-elevated px-3 py-2 shadow-border"
+          >
+            <span
+              className={cn(
+                "grid size-10 shrink-0 place-items-center rounded-md bg-bg/50",
+                rarity.text,
+              )}
+            >
               <GameIcon name={e.icon} className="size-8" rarity={rarity.key} />
             </span>
             <div className="min-w-0 flex-1">
               <p className={cn("truncate font-medium", rarity.text)}>{e.name}</p>
-              <p className="truncate text-xs text-subtle">{rarity.label}{e.temporary ? " · temporário" : ""}</p>
+              <p className="truncate text-xs text-subtle">
+                {rarity.label}
+                {e.temporary ? " · temporário" : ""}
+              </p>
             </div>
             <Button
               type="button"
@@ -204,13 +252,18 @@ function QuickCreateForm({ character, onDone }: { character: Character; onDone: 
     };
     if (!values.name.trim()) return;
     let created: { id: number; name: string; icon: string; rarity: string } | null = null;
-    const ok = await run(async () => {
-      created = await api.gmQuickCreateEquipment(values, {
-        characterId: character.id,
-        temporary: temporary && deliver,
-        deliver,
-      });
-    }, deliver ? `${values.name} entregue a ${character.name}.` : `${values.name} criado no Arsenal.`);
+    const ok = await run(
+      async () => {
+        created = await api.gmQuickCreateEquipment(values, {
+          characterId: character.id,
+          temporary: temporary && deliver,
+          deliver,
+        });
+      },
+      deliver
+        ? `${values.name} entregue a ${character.name}.`
+        : `${values.name} criado no Arsenal.`,
+    );
     if (ok && created) {
       const c = created as { id: number; name: string; icon: string; rarity: string };
       pushRecentEquipment({
@@ -229,7 +282,13 @@ function QuickCreateForm({ character, onDone }: { character: Character; onDone: 
     <form className="grid gap-3" onSubmit={(e) => e.preventDefault()}>
       <div className="grid gap-1.5">
         <Label htmlFor="quick-name">Nome</Label>
-        <Input id="quick-name" name="name" required maxLength={80} placeholder="Ex.: Espada Longa Flamejante" />
+        <Input
+          id="quick-name"
+          name="name"
+          required
+          maxLength={80}
+          placeholder="Ex.: Espada Longa Flamejante"
+        />
       </div>
       <IconField initial="sword" category="equipment" />
       <div className="grid grid-cols-2 gap-3">
@@ -272,7 +331,9 @@ function QuickCreateForm({ character, onDone }: { character: Character; onDone: 
         />
         <span>
           Criar como equipamento temporário
-          <span className="block text-xs text-subtle">Só para {character.name}; não entra no Arsenal.</span>
+          <span className="block text-xs text-subtle">
+            Só para {character.name}; não entra no Arsenal.
+          </span>
         </span>
       </label>
       <div className="flex flex-wrap gap-2">

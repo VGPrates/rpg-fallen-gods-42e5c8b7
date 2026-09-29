@@ -24,13 +24,17 @@ type Props = {
   pending?: boolean;
   /** Ação extra ao lado do título dos equipamentos (ex.: adicionar equipamento). */
   equipmentAction?: ReactNode;
-  onAddItem?: (item: { name: string; description: string; quantity: number; kind: "item" | "belonging" }) => void;
+  onAddItem?: (item: {
+    name: string;
+    description: string;
+    quantity: number;
+    kind: "item" | "belonging";
+  }) => void;
   onRemoveItem?: (itemId: number) => void;
   onEquip: (itemId: number, slot: BodySlot) => void;
   onUnequip: (itemId: number) => void;
   onSaveNotes?: (notes: string) => void;
 };
-
 
 export function InventoryPanel({
   character,
@@ -58,7 +62,12 @@ export function InventoryPanel({
           <h3 className="font-display text-lg">Corpo e equipamentos</h3>
           <p className="text-xs text-subtle">Arraste até o encaixe do corpo — ou use Equipar.</p>
         </div>
-        <BodyFigure items={character.inventory} canEquip={canEquipItems} onEquip={onEquip} onUnequip={onUnequip} />
+        <BodyFigure
+          items={character.inventory}
+          canEquip={canEquipItems}
+          onEquip={onEquip}
+          onUnequip={onUnequip}
+        />
       </section>
 
       <section className="grid gap-3">
@@ -68,7 +77,9 @@ export function InventoryPanel({
         </div>
 
         {gear.length === 0 ? (
-          <p className="text-sm text-subtle">Nenhum equipamento. O Mestre entrega os equipamentos.</p>
+          <p className="text-sm text-subtle">
+            Nenhum equipamento. O Mestre entrega os equipamentos.
+          </p>
         ) : (
           <ul className="grid gap-2 md:grid-cols-2">
             {gear.map((item) => (
@@ -94,17 +105,28 @@ export function InventoryPanel({
             <section key={section.key} className="grid content-start gap-3">
               <h3 className="font-display text-lg">{section.label}</h3>
               {items.length === 0 ? (
-                <p className="text-sm text-subtle">{canManageItems ? "Nada registrado." : "Nada registrado. O Mestre entrega itens e pertences."}</p>
+                <p className="text-sm text-subtle">
+                  {canManageItems
+                    ? "Nada registrado."
+                    : "Nada registrado. O Mestre entrega itens e pertences."}
+                </p>
               ) : (
                 <ul className="grid gap-2">
                   {items.map((item) => (
-                    <li key={item.id} className="flex items-start gap-3 rounded-lg bg-elevated px-3 py-2.5 shadow-border">
+                    <li
+                      key={item.id}
+                      className="flex items-start gap-3 rounded-lg bg-elevated px-3 py-2.5 shadow-border"
+                    >
                       <div className="min-w-0 flex-1">
                         <p className="font-medium">
                           {item.name}
-                          {item.quantity > 1 ? <span className="ml-2 tabular-nums text-subtle">×{item.quantity}</span> : null}
+                          {item.quantity > 1 ? (
+                            <span className="ml-2 tabular-nums text-subtle">×{item.quantity}</span>
+                          ) : null}
                         </p>
-                        {item.description ? <p className="text-sm text-muted">{item.description}</p> : null}
+                        {item.description ? (
+                          <p className="text-sm text-muted">{item.description}</p>
+                        ) : null}
                       </div>
                       {canManageItems ? (
                         <button
@@ -152,12 +174,22 @@ export function InventoryPanel({
               </div>
               <div className="grid gap-1.5">
                 <Label htmlFor="item-qty">Qtd.</Label>
-                <ValueStepper name="quantity" defaultValue={1} min={1} max={999} ariaLabel="quantidade" />
+                <ValueStepper
+                  name="quantity"
+                  defaultValue={1}
+                  min={1}
+                  max={999}
+                  ariaLabel="quantidade"
+                />
               </div>
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="item-kind">Tipo</Label>
-              <Select id="item-kind" value={kind} onChange={(e) => setKind(e.target.value as "item" | "belonging")}>
+              <Select
+                id="item-kind"
+                value={kind}
+                onChange={(e) => setKind(e.target.value as "item" | "belonging")}
+              >
                 {ITEM_KINDS.map((k) => (
                   <option key={k.key} value={k.key}>
                     {k.label}
@@ -180,13 +212,26 @@ export function InventoryPanel({
             <h3 className="font-display text-lg">Anotações</h3>
             {canEditNotes && onSaveNotes ? (
               <div className="grid gap-2">
-                <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={7} maxLength={8000} placeholder="Segredos, pistas, dívidas, juramentos..." />
-                <Button type="button" variant="outline" disabled={pending || notes === character.notes} onClick={() => onSaveNotes(notes)}>
+                <Textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={7}
+                  maxLength={8000}
+                  placeholder="Segredos, pistas, dívidas, juramentos..."
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={pending || notes === character.notes}
+                  onClick={() => onSaveNotes(notes)}
+                >
                   Salvar anotações
                 </Button>
               </div>
             ) : (
-              <p className="whitespace-pre-wrap text-sm text-muted">{character.notes || "Nenhuma anotação."}</p>
+              <p className="whitespace-pre-wrap text-sm text-muted">
+                {character.notes || "Nenhuma anotação."}
+              </p>
             )}
           </section>
         ) : null}
@@ -231,7 +276,9 @@ function GearRow({
       )}
     >
       {canEquip ? <GripVertical className="mt-3 size-4 shrink-0 text-subtle" /> : null}
-      <span className={cn("grid size-14 shrink-0 place-items-center rounded-md bg-bg/50", rarity.text)}>
+      <span
+        className={cn("grid size-14 shrink-0 place-items-center rounded-md bg-bg/50", rarity.text)}
+      >
         <GameIcon name={eq.icon} className="size-12" rarity={rarity.key} />
       </span>
       <div className="min-w-0 flex-1">
@@ -245,16 +292,30 @@ function GearRow({
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {item.equippedSlot ? (
             <>
-              <span className="rounded-full bg-primary/25 px-2 py-0.5 text-xs text-fg">Equipado · {SLOT_LABEL[item.equippedSlot]}</span>
+              <span className="rounded-full bg-primary/25 px-2 py-0.5 text-xs text-fg">
+                Equipado · {SLOT_LABEL[item.equippedSlot]}
+              </span>
               {canEquip ? (
-                <Button type="button" size="sm" variant="ghost" disabled={pending} onClick={onUnequip}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  disabled={pending}
+                  onClick={onUnequip}
+                >
                   Desequipar
                 </Button>
               ) : null}
             </>
           ) : canEquip ? (
             cat.slots.length === 1 ? (
-              <Button type="button" size="sm" variant="outline" disabled={pending} onClick={() => onEquip(cat.slots[0]!)}>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={pending}
+                onClick={() => onEquip(cat.slots[0]!)}
+              >
                 Equipar
               </Button>
             ) : (
@@ -277,7 +338,13 @@ function GearRow({
         </div>
       </div>
       {canRemove ? (
-        <button type="button" className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg" disabled={pending} onClick={onRemove} aria-label={`Remover ${item.name}`}>
+        <button
+          type="button"
+          className="grid size-9 place-items-center rounded-md text-muted hover:bg-surface hover:text-fg"
+          disabled={pending}
+          onClick={onRemove}
+          aria-label={`Remover ${item.name}`}
+        >
           <Trash2 className="size-4" />
         </button>
       ) : null}

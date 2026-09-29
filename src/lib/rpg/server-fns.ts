@@ -58,7 +58,9 @@ export const spendPointsFn = createServerFn({ method: "POST" })
 
 export const gmSetStatsFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { characterId: number; stats: Record<StatKey, number> & { unspent: number } }) => data)
+  .inputValidator(
+    (data: { characterId: number; stats: Record<StatKey, number> & { unspent: number } }) => data,
+  )
   .handler(async ({ context, data }) => {
     const store = await import("./store.server");
     return store.gmSetStats(context.userId, data.characterId, data.stats);
@@ -77,7 +79,14 @@ export const gmUpdateVitalsFn = createServerFn({ method: "POST" })
   .inputValidator(
     (data: {
       characterId: number;
-      vitals: { hp: number; hpMax: number; mana: number; manaMax: number; stamina: number; staminaMax: number };
+      vitals: {
+        hp: number;
+        hpMax: number;
+        mana: number;
+        manaMax: number;
+        stamina: number;
+        staminaMax: number;
+      };
     }) => data,
   )
   .handler(async ({ context, data }) => {
@@ -165,10 +174,15 @@ export const gmQuickCreateEquipmentFn = createServerFn({ method: "POST" })
     });
   });
 
-
 export const saveLibraryEntryFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { table: "equipment" | "effects" | "conditions"; id: number | null; values: Record<string, unknown> }) => data)
+  .inputValidator(
+    (data: {
+      table: "equipment" | "effects" | "conditions";
+      id: number | null;
+      values: Record<string, unknown>;
+    }) => data,
+  )
   .handler(async ({ context, data }) => {
     const store = await import("./store.server");
     return store.saveLibraryEntry(context.userId, data.table, data.id, data.values);
