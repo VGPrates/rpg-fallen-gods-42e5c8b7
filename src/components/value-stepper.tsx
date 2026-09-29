@@ -33,6 +33,7 @@ export function ValueStepper({
   disabled,
   required,
   compact,
+  editable,
   ariaLabel,
   onChange,
 }: Props) {
