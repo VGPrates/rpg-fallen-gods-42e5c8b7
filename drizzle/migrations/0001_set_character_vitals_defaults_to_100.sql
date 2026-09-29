@@ -1,0 +1,6 @@
+ALTER TABLE public.characters ALTER COLUMN hp SET DEFAULT 100;
+ALTER TABLE public.characters ALTER COLUMN hp_max SET DEFAULT 100;
+ALTER TABLE public.characters ALTER COLUMN mana SET DEFAULT 100;
+ALTER TABLE public.characters ALTER COLUMN mana_max SET DEFAULT 100;
+ALTER TABLE public.characters ALTER COLUMN stamina SET DEFAULT 100;
+ALTER TABLE public.characters ALTER COLUMN stamina_max SET DEFAULT 100;

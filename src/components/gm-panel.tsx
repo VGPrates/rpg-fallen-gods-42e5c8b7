@@ -199,7 +199,7 @@ function GmEditor({ character }: { character: Character }) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+        <Card className="self-start">
           <CardHeader>
             <CardTitle>Efeitos e condições</CardTitle>
             <CardDescription>O jogador vê, mas só você aplica ou remove.</CardDescription>
