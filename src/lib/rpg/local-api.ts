@@ -150,7 +150,15 @@ export async function rollD20(): Promise<DiceRoll> {
 }
 
 export async function recentRolls(): Promise<DiceRoll[]> {
-  return fns.recentRollsFn();
+  // Polled in the background: never throw (expired session would blank the screen).
+  try {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) return [];
+    return await fns.recentRollsFn();
+  } catch {
+    return [];
+  }
 }
 
 export function mapEquipment(e: Equipment) {
