@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { GripVertical, Trash2 } from "lucide-react";
 import { CATEGORY, ITEM_KINDS, RARITY, SLOT_LABEL } from "@/lib/rpg/constants";
 import { formatModifiers } from "@/lib/rpg/stats";
@@ -22,12 +22,15 @@ type Props = {
   canEditNotes: boolean;
   canRemoveEquipment: boolean;
   pending?: boolean;
+  /** Ação extra ao lado do título dos equipamentos (ex.: adicionar equipamento). */
+  equipmentAction?: ReactNode;
   onAddItem?: (item: { name: string; description: string; quantity: number; kind: "item" | "belonging" }) => void;
   onRemoveItem?: (itemId: number) => void;
   onEquip: (itemId: number, slot: BodySlot) => void;
   onUnequip: (itemId: number) => void;
   onSaveNotes?: (notes: string) => void;
 };
+
 
 export function InventoryPanel({
   character,
