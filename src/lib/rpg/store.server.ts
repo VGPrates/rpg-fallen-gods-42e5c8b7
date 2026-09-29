@@ -397,10 +397,23 @@ export async function getMyState(userId: string): Promise<RpgState> {
   return { profile, character: chars[0] ?? null, party: [] };
 }
 
+/**
+ * Garante a coluna que marca equipamentos temporários (entregues a um jogador
+ * sem entrar no Arsenal). Idempotente e executada uma vez por processo.
+ */
+let equipmentSchemaReady: Promise<void> | null = null;
+async function ensureEquipmentSchema(sql: Sql) {
+  equipmentSchemaReady ??= (async () => {
+    await sql`alter table equipment add column if not exists is_temporary boolean not null default false`;
+  })();
+  await equipmentSchemaReady;
+}
+
 export async function getLibrary() {
   const sql = await getSql();
+  await ensureEquipmentSchema(sql);
   const [equipment, effects, conditions] = await Promise.all([
-    sql<EqRow>`select * from equipment order by id`,
+    sql<EqRow>`select * from equipment where coalesce(is_temporary, false) = false order by id`,
     sql<EffectRow>`select * from effects order by id`,
     sql<ConditionRow>`select * from conditions order by id`,
   ]);
@@ -410,6 +423,7 @@ export async function getLibrary() {
     conditions: conditions.map(mapCondition),
   };
 }
+
 
 export async function chooseRoleForUser(
   userId: string,
@@ -647,6 +661,52 @@ export async function gmGiveEquipment(userId: string, characterId: number, equip
     values (${characterId}, ${equipmentId}, ${eq[0].name}, ${eq[0].description}, 1, 'body')
   `;
 }
+
+/**
+ * Criação rápida de equipamento a partir da ficha do jogador.
+ * `temporary` cria o item só para aquele jogador, sem listá-lo no Arsenal.
+ */
+export async function gmQuickCreateEquipment(
+  userId: string,
+  values: Record<string, unknown>,
+  options: { characterId: number | null; temporary: boolean; deliver: boolean },
+) {
+  const sql = await getSql();
+  await requireGm(sql, userId);
+  await ensureEquipmentSchema(sql);
+  if (options.characterId !== null) {
+    await requireGmCharacter(sql, userId, options.characterId);
+  }
+  if (options.temporary && (!options.deliver || options.characterId === null)) {
+    throw new Error("Equipamento temporário precisa de um jogador.");
+  }
+
+  const name = String(values['name'] ?? "Novo").slice(0, 80) || "Novo";
+  const icon = String(values['icon'] ?? "sword").slice(0, 80);
+  const category = String(values['category'] ?? "arma");
+  const rarity = String(values['rarity'] ?? "comum");
+  const description = String(values['description'] ?? "").slice(0, 400);
+  const effects = String(values['effects'] ?? "").slice(0, 400);
+  const modifiers = JSON.stringify(asModifiers(values['modifiers']));
+
+  const created = await sql.query<{ id: number }>(
+    `insert into equipment (name, icon, category, rarity, description, effects, modifiers, is_temporary)
+     values ($1,$2,$3,$4,$5,$6,$7::jsonb,$8) returning id`,
+    [name, icon, category, rarity, description, effects, modifiers, options.temporary],
+  );
+  const equipmentId = asInt(created[0]?.id);
+  if (!equipmentId) throw new Error("Não foi possível criar o equipamento.");
+
+  if (options.deliver && options.characterId !== null) {
+    await sql`
+      insert into inventory_items (character_id, equipment_id, name, description, quantity, kind)
+      values (${options.characterId}, ${equipmentId}, ${name}, ${description}, 1, 'body')
+    `;
+  }
+
+  return { id: equipmentId, name, icon, rarity, temporary: options.temporary };
+}
+
 
 export type LibTable = "equipment" | "effects" | "conditions";
 
