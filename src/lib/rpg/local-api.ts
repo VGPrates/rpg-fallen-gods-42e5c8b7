@@ -11,11 +11,24 @@ import type {
 import type { RpgState } from "./api-types";
 import * as fns from "./server-fns";
 
+async function hasSession() {
+  try {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data } = await supabase.auth.getSession();
+    return !!data.session;
+  } catch {
+    return false;
+  }
+}
+
 export async function getMyState(): Promise<RpgState> {
+  // Polled every few seconds: with no session, don't hit the protected endpoint.
+  if (!(await hasSession())) return new Promise<RpgState>(() => {});
   return fns.getMyStateFn();
 }
 
 export async function getLibrary() {
+  if (!(await hasSession())) return { equipment: [], effects: [], conditions: [] } as unknown as Awaited<ReturnType<typeof fns.getLibraryFn>>;
   return fns.getLibraryFn();
 }
 
