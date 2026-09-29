@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Copy, Pencil, Trash2 } from "lucide-react";
-import { CATEGORIES, CATEGORY, RARITIES, RARITY, STATS } from "@/lib/rpg/constants";
+import { CATEGORIES, CATEGORY, RARITIES, RARITY } from "@/lib/rpg/constants";
 import * as api from "@/lib/rpg/api";
 import { useLibrary } from "@/lib/rpg/hooks";
 import { formatModifiers } from "@/lib/rpg/stats";
 import { useAct } from "@/lib/rpg/use-act";
 import { pushRecentEquipment } from "@/lib/rpg/recent-equipment";
-import type { Character, Condition, Effect, Equipment, Modifiers } from "@/lib/rpg/types";
+import type { Character, Condition, Effect, Equipment } from "@/lib/rpg/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,6 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { GameIcon } from "@/components/game-icon";
 import { IconField, ModifierFields, readMods } from "@/components/equipment-fields";
-import { ValueStepper } from "@/components/value-stepper";
 import { cn } from "@/lib/utils";
 
 
