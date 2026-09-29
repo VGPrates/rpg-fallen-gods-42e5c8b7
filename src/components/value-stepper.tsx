@@ -12,6 +12,8 @@ type Props = {
   disabled?: boolean;
   required?: boolean;
   compact?: boolean;
+  /** Render the value as a typeable number input instead of static text. */
+  editable?: boolean;
   ariaLabel: string;
   onChange?: (value: number) => void;
 };
@@ -31,6 +33,7 @@ export function ValueStepper({
   disabled,
   required,
   compact,
+  editable,
   ariaLabel,
   onChange,
 }: Props) {
@@ -59,7 +62,7 @@ export function ValueStepper({
 
   return (
     <span className={cn("value-stepper", compact && "scale-[0.92] origin-right")} data-value-stepper="">
-      {name ? <input type="hidden" name={name} value={current} required={required} /> : null}
+      {name && !editable ? <input type="hidden" name={name} value={current} required={required} /> : null}
       <button
         type="button"
         className="value-stepper__button"
@@ -70,14 +73,34 @@ export function ValueStepper({
       >
         <Minus className="size-3.5" strokeWidth={2.2} />
       </button>
-      <span key={pulse} className={cn("value-stepper__value", pulse > 0 && "is-changing")} aria-live="polite">
-        {current}
-        {delta !== null ? (
-          <span className={cn("value-stepper__delta", delta < 0 && "is-negative")}>
-            {delta > 0 ? `+${delta}` : delta}
-          </span>
-        ) : null}
-      </span>
+      {editable ? (
+        <input
+          type="number"
+          inputMode="numeric"
+          name={name}
+          value={current}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+          required={required}
+          aria-label={ariaLabel}
+          className="value-stepper__input"
+          onChange={(e) => {
+            const parsed = Number.parseInt(e.target.value, 10);
+            if (!Number.isNaN(parsed)) update(parsed);
+          }}
+        />
+      ) : (
+        <span key={pulse} className={cn("value-stepper__value", pulse > 0 && "is-changing")} aria-live="polite">
+          {current}
+          {delta !== null ? (
+            <span className={cn("value-stepper__delta", delta < 0 && "is-negative")}>
+              {delta > 0 ? `+${delta}` : delta}
+            </span>
+          ) : null}
+        </span>
+      )}
       <button
         type="button"
         className="value-stepper__button"

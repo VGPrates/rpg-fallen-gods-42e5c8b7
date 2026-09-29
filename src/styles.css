@@ -318,6 +318,23 @@
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
+.value-stepper__input {
+  width: 3.2rem;
+  min-width: 2.2rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-fg);
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
+  line-height: 1;
+  text-align: center;
+  outline: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.value-stepper__input::-webkit-outer-spin-button,
+.value-stepper__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .value-stepper__value.is-changing { animation: stepper-value 180ms cubic-bezier(0.22, 1, 0.36, 1); }
 .value-stepper__delta {
   position: absolute;

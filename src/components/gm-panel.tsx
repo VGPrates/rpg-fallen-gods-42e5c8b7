@@ -188,7 +188,8 @@ function GmEditor({ character }: { character: Character }) {
               name="amount"
               defaultValue={1}
               min={1}
-              max={50}
+              max={999}
+              editable
               ariaLabel="pontos a conceder"
             />
             <Button type="submit" disabled={pending}>
