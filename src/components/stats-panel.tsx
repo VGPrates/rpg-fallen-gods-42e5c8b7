@@ -118,24 +118,12 @@ export function StatsPanel({
                 <p className="font-medium leading-tight">{stat.label}</p>
                 <p className="truncate text-xs text-subtle">{stat.hint}</p>
               </div>
-              <div className="text-right">
-                <span
-                  key={highlighted ? `${stat.key}-${flashGen}` : stat.key}
-                  className={cn("font-display text-xl tabular-nums", highlighted && "stat-value-applied")}
-                >
-                  {s.total + add}
-                </span>
-                <span className="block text-[11px] tabular-nums text-subtle">
-                  {s.base}
-                  {add > 0 ? <span className="text-ring"> +{add}</span> : null}
-                  {s.bonus !== 0 ? (
-                    <span className={s.bonus > 0 ? "text-stamina-bright" : "text-hp-bright"}>
-                      {" "}
-                      {s.bonus > 0 ? `+${s.bonus}` : s.bonus}
-                    </span>
-                  ) : null}
-                </span>
-              </div>
+              <span
+                key={highlighted ? `${stat.key}-${flashGen}` : stat.key}
+                className={cn("font-display text-3xl tabular-nums leading-none", highlighted && "stat-value-applied")}
+              >
+                {s.total + add}
+              </span>
               {canSpend && remaining + add > 0 ? (
                 <ValueStepper
                   value={add}
